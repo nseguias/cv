@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nahem Seguias | Smart Contracts Developer</title>
+    <meta name="description" content="Smart Contracts Developer with 5+ years building decentralized applications in Cosmos, Ethereum, and Solana.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛓️</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --accent-purple: #a371f7;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --accent-cyan: #39c5cf;
+            --border-color: #30363d;
+            --glow-green: rgba(63, 185, 80, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        /* Flow field canvas */
+        #flowField {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Cursor glow effect */
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(63, 185, 80, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Terminal window styling */
+        .terminal {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .terminal-header {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-btn.red { background: var(--accent-red); }
+        .terminal-btn.yellow { background: var(--accent-orange); }
+        .terminal-btn.green { background: var(--accent-green); }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .terminal-body {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 8px 8px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Code styling */
+        .comment {
+            color: var(--text-muted);
+        }
+
+        .keyword {
+            color: var(--accent-purple);
+        }
+
+        .function {
+            color: var(--accent-blue);
+        }
+
+        .string {
+            color: var(--accent-green);
+        }
+
+        .number {
+            color: var(--accent-orange);
+        }
+
+        .type {
+            color: var(--accent-cyan);
+        }
+
+        .variable {
+            color: var(--text-primary);
+        }
+
+        .punctuation {
+            color: var(--text-secondary);
+        }
+
+        /* Section styling */
+        .section {
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0s; }
+        .section:nth-child(2) { animation-delay: 2s; }
+        .section:nth-child(3) { animation-delay: 2.1s; }
+        .section:nth-child(4) { animation-delay: 2.2s; }
+        .section:nth-child(5) { animation-delay: 2.3s; }
+        .section:nth-child(6) { animation-delay: 2.4s; }
+        .section:nth-child(7) { animation-delay: 2.5s; }
+        .section:nth-child(8) { animation-delay: 2.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Prompt line */
+        .prompt {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .prompt-symbol {
+            color: var(--accent-green);
+            margin-right: 8px;
+            user-select: none;
+        }
+
+        .prompt-path {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        /* Code block */
+        .code-block {
+            margin-left: 20px;
+            padding: 16px 0;
+        }
+
+        .code-line {
+            padding: 2px 0;
+            transition: background 0.2s ease;
+        }
+
+        .code-line:hover {
+            background: rgba(63, 185, 80, 0.05);
+        }
+
+        .indent-1 { margin-left: 20px; }
+        .indent-2 { margin-left: 40px; }
+        .indent-3 { margin-left: 60px; }
+
+        /* Links */
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--accent-green);
+            text-shadow: 0 0 8px var(--glow-green);
+        }
+
+        /* Experience items */
+        .exp-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .exp-item:hover {
+            border-left-color: var(--accent-green);
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .exp-company {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .exp-date {
+            color: var(--text-muted);
+        }
+
+        .exp-role {
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+        }
+
+        .exp-desc {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Skills grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .skill-category {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .skill-category:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .skill-title {
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .skill-list {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .skill-item {
+            display: inline-block;
+            margin: 2px 4px 2px 0;
+        }
+
+        .skill-item::after {
+            content: ',';
+            color: var(--text-muted);
+        }
+
+        .skill-item:last-child::after {
+            content: '';
+        }
+
+        /* Contact links */
+        .contact-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(63, 185, 80, 0.15);
+        }
+
+        .contact-icon {
+            font-size: 16px;
+        }
+
+        /* Typing animation */
+        .typing {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--accent-green);
+            animation: typing 2s steps(30) forwards, blink 0.8s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+            body {
+                font-size: 13px;
+            }
+
+            .terminal {
+                padding: 10px;
+            }
+
+            .terminal-body {
+                padding: 16px;
+            }
+
+            .exp-header {
+                flex-direction: column;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                flex-direction: column;
+            }
+
+            .contact-item {
+                justify-content: center;
+            }
+
+            .indent-1 { margin-left: 12px; }
+            .indent-2 { margin-left: 24px; }
+            .indent-3 { margin-left: 36px; }
+        }
+
+        /* Project highlight */
+        .project-highlight {
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(63, 185, 80, 0.1) 100%);
+            border: 1px solid var(--accent-green);
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .project-highlight a {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* Blinking cursor at end */
+        .cursor-end {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--accent-green);
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Typing hero */
+        .hero-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-green);
+            margin-bottom: 16px;
+            object-fit: cover;
+            box-shadow: 0 0 20px var(--glow-green);
+        }
+
+        .hero-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid var(--accent-green);
+            width: 0;
+            animation: typewriter 1.5s steps(14) 0.5s forwards, blink-caret 0.8s infinite;
+        }
+
+        @keyframes typewriter {
+            to { width: 14ch; }
+        }
+
+        @keyframes blink-caret {
+            50% { border-color: transparent; }
+        }
+
+        .hero-title {
+            color: var(--text-secondary);
+            font-size: 14px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* PDF download button */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-green) 0%, #2ea043 100%);
+            color: var(--bg-primary);
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--glow-green);
+            color: var(--bg-primary);
+            text-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="flowField"></canvas>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <main class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-btn red"></div>
+            <div class="terminal-btn yellow"></div>
+            <div class="terminal-btn green"></div>
+            <span class="terminal-title">nahem@blockchain ~ /cv</span>
+        </div>
+
+        <div class="terminal-body">
+            <!-- Hero -->
+            <section class="section" style="text-align: center; padding: 10px 0 0;">
+                <div class="hero-name">Nahem Seguias</div>
+            </section>
+
+            <!-- Header / About -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">cat</span>&nbsp;<span class="string">about.rs</span>
+                </div>
+                <div class="code-block">
+                    <div class="code-line">
+                        <span class="keyword">struct</span> <span class="type">Developer</span> {
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">name</span>: <span class="string">"Nahem Seguias"</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">role</span>: <span class="string">"Smart Contracts Developer"</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">location</span>: <span class="string">"Madrid, Spain"</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">remote</span>: <span class="keyword">true</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">languages</span>: <span class="punctuation">[</span><span class="string">"English"</span>, <span class="string">"Spanish"</span><span class="punctuation">]</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">ai_powered</span>: <span class="keyword">true</span>, <span class="comment">// always shipping with the latest models</span>
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">works_well_with</span>: <span class="punctuation">[</span><span class="string">"teams"</span>, <span class="string">"solo"</span><span class="punctuation">]</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">security_first</span>: <span class="keyword">true</span>,
+                    </div>
+                    <div class="code-line indent-1">
+                        <span class="variable">ownership</span>: <span class="string">"full"</span>,
+                    </div>
+                    <div class="code-line">}</div>
+                    <div class="code-line" style="margin-top: 12px;">
+                        <span class="comment">// 10+ years in systems engineering, last 5 building on-chain.</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="comment">// Ships smart contracts across Cosmos, Ethereum, and Solana.</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="comment">// HFT + stock exchange background = obsessed with performance & security.</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="comment">// AI native: if there's a new model, I've probably broken it already.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">wc</span>&nbsp;<span class="string">-l</span>&nbsp;<span class="variable">achievements/*</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value">5+</span>
+                        <span class="stat-label">Years Blockchain</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">10+</span>
+                        <span class="stat-label">Chains Deployed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">100+</span>
+                        <span class="stat-label">Contracts Shipped</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">10+</span>
+                        <span class="stat-label">Years Engineering</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">cargo</span>&nbsp;<span class="string">build</span>&nbsp;--features&nbsp;<span class="variable">skills</span>
+                </div>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <div class="skill-title">// dev_stack</div>
+                        <div class="skill-list">
+                            <span class="skill-item">Rust</span>
+                            <span class="skill-item">Solidity</span>
+                            <span class="skill-item">TypeScript</span>
+                            <span class="skill-item">Python</span>
+                            <span class="skill-item">Git</span>
+                            <span class="skill-item">Claude</span>
+                            <span class="skill-item">Cursor</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <div class="skill-title">// blockchain</div>
+                        <div class="skill-list">
+                            <span class="skill-item">Cosmos</span>
+                            <span class="skill-item">CosmWasm</span>
+                            <span class="skill-item">Solana</span>
+                            <span class="skill-item">Anchor</span>
+                            <span class="skill-item">EVM</span>
+                            <span class="skill-item">Foundry</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <div class="skill-title">// defi</div>
+                        <div class="skill-list">
+                            <span class="skill-item">AMMs</span>
+                            <span class="skill-item">Flash Loans</span>
+                            <span class="skill-item">Lending</span>
+                            <span class="skill-item">Staking</span>
+                            <span class="skill-item">DAOs</span>
+                            <span class="skill-item">NFTs</span>
+                            <span class="skill-item">MEV</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experience -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">git</span>&nbsp;<span class="string">log</span>&nbsp;--oneline&nbsp;<span class="variable">experience</span>
+                </div>
+                <div class="code-block">
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Freelance</span>
+                            <span class="exp-date">2023 - Present</span>
+                        </div>
+                        <div class="exp-role">Smart Contracts Developer</div>
+                        <div class="exp-desc">
+                            End-to-end dApp development across multiple ecosystems.
+                            Cosmos (Rust/CosmWasm): DAOs, naming services, streaming payments, NFT collections.
+                            Ethereum (Solidity): RWA tokenization for real-world asset trading.
+                            Solana: Event ticketing with crowdfunding mechanics.
+                        </div>
+                        <div class="project-highlight">
+                            <span class="comment">// Featured:</span> <a href="https://streamweave.org" target="_blank">StreamWeave</a> - Real-time crypto streaming payments platform
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Terraform Labs (Terra)</span>
+                            <span class="exp-date">2022 - 2023</span>
+                        </div>
+                        <div class="exp-role">Smart Contracts Developer</div>
+                        <div class="exp-desc">
+                            Built core protocol infrastructure in Rust & CosmWasm: automated task scheduler for conditional execution, and prediction markets platform.
+                            Full development lifecycle from design through deployment and auditor collaboration.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">SIX Swiss Stock Exchange</span>
+                            <span class="exp-date">2018 - 2022</span>
+                        </div>
+                        <div class="exp-role">System Engineer</div>
+                        <div class="exp-desc">
+                            Mission-critical infrastructure connecting banks, brokers, and exchanges across Europe.
+                            Led integration projects and maintained 99.99% uptime for trading systems.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">SICE (ACS Group)</span>
+                            <span class="exp-date">2017 - 2018</span>
+                        </div>
+                        <div class="exp-role">Network Engineer</div>
+                        <div class="exp-desc">
+                            Architected network infrastructure for smart city traffic systems across Spain.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Jump Trading</span>
+                            <span class="exp-date">2015 - 2017</span>
+                        </div>
+                        <div class="exp-role">NetOps Engineer</div>
+                        <div class="exp-desc">
+                            Sub-microsecond network optimization for one of the world's largest HFT firms.
+                            Built monitoring and automation for infrastructure handling billions in daily volume.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Cambridge Broadband Networks</span>
+                            <span class="exp-date">2013 - 2015</span>
+                        </div>
+                        <div class="exp-role">Customer Support Engineer</div>
+                        <div class="exp-desc">
+                            Designed wireless backhaul solutions for telecom clients across EMEA and LATAM.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Education -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">ls</span>&nbsp;<span class="string">-la</span>&nbsp;<span class="variable">education/</span>
+                </div>
+                <div class="code-block">
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Universidad Católica Andrés Bello</span>
+                            <span class="exp-date">2005 - 2011</span>
+                        </div>
+                        <div class="exp-role">MSc Telecommunication Engineering</div>
+                        <div class="exp-desc">
+                            Graduated with honours. Top 5% of class.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Madrid Stock Exchange</span>
+                            <span class="exp-date">2021</span>
+                        </div>
+                        <div class="exp-role">MSc AI for Financial Markets</div>
+                        <div class="exp-desc">
+                            Trading algorithms, deep learning, cloud computing for big data.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">360 GSP College, London</span>
+                            <span class="exp-date">2013 - 2014</span>
+                        </div>
+                        <div class="exp-role">Server Administration</div>
+                        <div class="exp-desc">
+                            Cisco CCNA, Microsoft MCSA, VMware certifications.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="function">echo</span>&nbsp;<span class="variable">$CONTACT</span>
+                </div>
+                <div class="contact-grid">
+                    <a href="mailto:nahemseguias@gmail.com" class="contact-item">
+                        <span class="contact-icon">@</span>
+                        <span>nahemseguias@gmail.com</span>
+                    </a>
+                    <a href="https://github.com/nseguias" target="_blank" class="contact-item">
+                        <span class="contact-icon">&lt;/&gt;</span>
+                        <span>github.com/nseguias</span>
+                    </a>
+                    <a href="https://linkedin.com/in/nseguias" target="_blank" class="contact-item">
+                        <span class="contact-icon">in</span>
+                        <span>linkedin.com/in/nseguias</span>
+                    </a>
+                    <a href="tel:+34665780125" class="contact-item">
+                        <span class="contact-icon">#</span>
+                        <span>+34 665 780 125</span>
+                    </a>
+                </div>
+                <div style="text-align: center;">
+                    <a href="Nahem Seguias CV.pdf" download class="download-btn">
+                        <span>↓</span>
+                        <span>Download PDF</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <section class="section">
+                <div class="prompt">
+                    <span class="prompt-symbol">$</span>
+                    <span class="prompt-path">~/</span>
+                    <span class="cursor-end"></span>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Flow Field Animation
+        const canvas = document.getElementById('flowField');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let mouse = { x: -1000, y: -1000 };
+        let time = 0;
+
+        // Line particles
+        const lines = [];
+        const lineCount = 80;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initLines();
+        }
+
+        function initLines() {
+            lines.length = 0;
+            for (let i = 0; i < lineCount; i++) {
+                lines.push({
+                    points: [],
+                    baseY: (height / lineCount) * i,
+                    speed: 0.5 + Math.random() * 0.5,
+                    amplitude: 20 + Math.random() * 30,
+                    frequency: 0.002 + Math.random() * 0.002,
+                    phase: Math.random() * Math.PI * 2,
+                    opacity: 0.08 + Math.random() * 0.12
+                });
+            }
+        }
+
+        function getFlowAngle(x, y, t) {
+            // Multiple sine waves for complex flow
+            const scale = 0.003;
+            const angle = Math.sin(x * scale + t) * Math.cos(y * scale + t * 0.7) * Math.PI;
+            return angle;
+        }
+
+        function distortFromMouse(x, y, baseY) {
+            const dx = x - mouse.x;
+            const dy = baseY - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const maxDist = 200;
+
+            if (dist < maxDist) {
+                const force = (1 - dist / maxDist) * 80;
+                const angle = Math.atan2(dy, dx);
+                return Math.sin(angle) * force;
+            }
+            return 0;
+        }
+
+        function drawLine(line) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(63, 185, 80, ${line.opacity})`;
+            ctx.lineWidth = 1;
+
+            const segments = 100;
+            const segmentWidth = width / segments;
+
+            for (let i = 0; i <= segments; i++) {
+                const x = i * segmentWidth;
+                const baseY = line.baseY;
+
+                // Sine wave motion
+                const wave1 = Math.sin(x * line.frequency + time * line.speed + line.phase) * line.amplitude;
+                const wave2 = Math.sin(x * line.frequency * 1.5 + time * line.speed * 0.8) * line.amplitude * 0.5;
+                const wave3 = Math.cos(x * line.frequency * 0.5 + time * line.speed * 1.2) * line.amplitude * 0.3;
+
+                // Flow field influence
+                const flowAngle = getFlowAngle(x, baseY, time * 0.5);
+                const flowOffset = Math.sin(flowAngle) * 15;
+
+                // Mouse distortion
+                const mouseOffset = distortFromMouse(x, baseY + wave1, baseY);
+
+                const y = baseY + wave1 + wave2 + wave3 + flowOffset + mouseOffset;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            time += 0.02;
+
+            lines.forEach(line => {
+                drawLine(line);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Event listeners
+        window.addEventListener('resize', resize);
+
+        document.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        // Initialize
+        resize();
+        animate();
+
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursorGlow');
+
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Hide glow on mobile
+        if ('ontouchstart' in window) {
+            cursorGlow.style.display = 'none';
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
