@@ -705,8 +705,9 @@
         </p>
         <p>
             On load, <span class="highlight" id="infoTxCount">~1,000</span> transaction hashes are fetched
-            from the blockchain. A live WebSocket streams new ones as they arrive.
-            When a block is mined, confirmed columns <span class="highlight">flash green</span> and fade.
+            from the blockchain. A live WebSocket streams new ones as they arrive —
+            watch for <span class="highlight">bright columns</span> appearing at the top.
+            When a block is mined, the screen <span class="highlight">flashes green</span>.
         </p>
         <p>
             <span class="highlight">Hover</span> a column to freeze it.
@@ -1079,8 +1080,10 @@
         let blockFlashProgress = -1;
 
         const COL_GAP = isMobile ? 36 : 16;
-        const FONT_SIZE = 13;
+        const FONT_SIZE = 15;
         const CHAR_HEIGHT = FONT_SIZE + 2;
+        const CHARS_PER_HASH = 64;
+        const HASH_GAP = 3; // empty lines between stacked hashes
         const GREEN = { r: 63, g: 185, b: 80 };
         const BLOCK_FLASH_FRAMES = 90;
         let liveTxCount = 0;
@@ -1090,7 +1093,6 @@
         let txPoolIdx = 0;   // next txid to assign
         const txMeta = {};   // txid -> { fee, vsize, value } when available
         const statusEl = document.getElementById('chainStatus');
-        let mouse = { x: -1000, y: -1000 };
 
         // WebSocket state
         let ws = null;
@@ -1112,19 +1114,38 @@
         }
 
         // ========== COLUMNS ==========
+        // Build a multi-hash char array that fills the viewport
+        // Returns { chars, txids } where txids[i] is the txid for segment i
+        function buildMultiHashChars(firstTxid, getTxid) {
+            const blockH = (CHARS_PER_HASH + HASH_GAP) * CHAR_HEIGHT;
+            const numHashes = Math.max(1, Math.ceil((height + blockH) / blockH));
+            const chars = firstTxid.slice(0, CHARS_PER_HASH).split('');
+            const txids = [firstTxid];
+            for (let h = 1; h < numHashes; h++) {
+                for (let g = 0; g < HASH_GAP; g++) chars.push(' ');
+                const txid = getTxid();
+                if (txid) {
+                    chars.push(...txid.slice(0, CHARS_PER_HASH).split(''));
+                    txids.push(txid);
+                }
+            }
+            return { chars, txids };
+        }
+
         function createColumnFromTxid(x, txid) {
-            const chars = txid.split('');
-            // All visual properties derived deterministically from the txid itself
+            const result = buildMultiHashChars(txid, () => {
+                if (txPoolIdx < txPool.length) return txPool[txPoolIdx++];
+                return null;
+            });
             const speed = 0.1 + (hexByte(txid, 0) / 255) * 0.5;
             const baseOpacity = 0.10 + (hexByte(txid, 1) / 255) * 0.10;
-            const totalH = chars.length * CHAR_HEIGHT;
+            const totalH = result.chars.length * CHAR_HEIGHT;
             const startFrac = (hexByte(txid, 2) + hexByte(txid, 3) * 256) / 65535;
-            const startY = -totalH + startFrac * (height + totalH); // spread from above viewport to bottom
+            const startY = -totalH + startFrac * (height + totalH);
 
             return {
-                x, y: startY, speed, chars, txid, baseOpacity,
+                x, y: startY, speed, chars: result.chars, txid, txids: result.txids, baseOpacity,
                 fresh: false, freshAge: 0,
-                confirmedTimer: 0,
             };
         }
 
@@ -1167,10 +1188,18 @@
             if (col.y > height + CHAR_HEIGHT) {
                 col.y = -totalH;
                 // Column wrapped — pick up new content
+                const getPoolTxid = () => {
+                    if (txPool.length > 0) return txPool[txPoolRecycleIdx++ % txPool.length];
+                    return null;
+                };
                 if (txQueue.length > 0) {
-                    // Live WebSocket tx — enters glowing
                     const entry = txQueue.shift();
-                    col.chars = entry.txid.split('');
+                    const result = buildMultiHashChars(entry.txid, () => {
+                        if (txQueue.length > 0) return txQueue.shift().txid;
+                        return getPoolTxid();
+                    });
+                    col.chars = result.chars;
+                    col.txids = result.txids;
                     col.txid = entry.txid;
                     col.speed = 0.2 + (hexByte(entry.txid, 0) / 255) * 0.35;
                     col.baseOpacity = 0.10 + (hexByte(entry.txid, 1) / 255) * 0.10;
@@ -1178,10 +1207,10 @@
                     col.freshAge = 0;
                     liveTxCount++;
                 } else if (txPool.length > 0) {
-                    // Recycle from pool — occasionally glow for visual continuity
-                    const txid = txPool[txPoolRecycleIdx % txPool.length];
-                    txPoolRecycleIdx++;
-                    col.chars = txid.split('');
+                    const txid = getPoolTxid();
+                    const result = buildMultiHashChars(txid, getPoolTxid);
+                    col.chars = result.chars;
+                    col.txids = result.txids;
                     col.txid = txid;
                     col.speed = 0.1 + (hexByte(txid, 0) / 255) * 0.5;
                     col.baseOpacity = 0.10 + (hexByte(txid, 1) / 255) * 0.10;
@@ -1193,7 +1222,6 @@
             }
 
             if (col.fresh) col.freshAge++;
-            if (col.confirmedTimer > 0) col.confirmedTimer--;
         }
 
         function drawColumn(col) {
@@ -1202,10 +1230,7 @@
 
             // Compute one color for the entire column
             let style;
-            if (col.confirmedTimer > 0) {
-                const a = (col.confirmedTimer / 60) * 0.35;
-                style = `rgba(${r}, ${g}, ${b}, ${a})`;
-            } else if (col.fresh) {
+            if (col.fresh) {
                 // Uniform fade over time: bright → readable dim as freshAge increases
                 const FADE_FRAMES = 500; // ~8s full fade
                 const t = Math.max(0, 1 - col.freshAge / FADE_FRAMES); // 1 = just arrived, 0 = fully faded
@@ -1225,15 +1250,8 @@
         }
 
         // ========== BLOCK MINED ==========
-        function triggerBlockFlash(blockId) {
+        function triggerBlockFlash() {
             blockFlashProgress = 1.0;
-            // Use block hash to deterministically pick which columns "confirm"
-            for (let i = 0; i < columns.length; i++) {
-                const byte = blockId ? hexByte(blockId, i % 32) : 128;
-                if (byte < 77) { // ~30% of columns
-                    columns[i].confirmedTimer = 60;
-                }
-            }
         }
 
         // ========== REST API — seed from real mempool ==========
@@ -1326,7 +1344,7 @@
 
                     // Block mined
                     if (data.block) {
-                        triggerBlockFlash(data.block.id || null);
+                        triggerBlockFlash();
                     }
                 } catch (e) { /* ignore parse errors */ }
             };
@@ -1483,8 +1501,6 @@
         }
 
         document.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
             // Unfreeze previous column
             if (frozenCol) {
                 frozenCol.speed = frozenOriginalSpeed;
@@ -1502,8 +1518,6 @@
         });
 
         document.addEventListener('mouseleave', () => {
-            mouse.x = -1000;
-            mouse.y = -1000;
             if (frozenCol) {
                 frozenCol.speed = frozenOriginalSpeed;
                 frozenCol = null;
@@ -1518,9 +1532,14 @@
             if (e.target.closest('.chain-info-card')) return;
 
             const col = findNearestSideColumn(e.clientX);
-            if (col && col.txid) {
+            if (col && col.txids && col.txids.length > 0) {
+                // Determine which stacked hash segment was clicked
+                const charIdx = (e.clientY - col.y) / CHAR_HEIGHT;
+                const segmentSize = CHARS_PER_HASH + HASH_GAP;
+                const segIdx = Math.max(0, Math.min(Math.floor(charIdx / segmentSize), col.txids.length - 1));
+                const clickedTxid = col.txids[segIdx] || col.txid;
                 closeInfoCard();
-                showTxDetail(col.txid, e.clientX, e.clientY);
+                showTxDetail(clickedTxid, e.clientX, e.clientY);
             } else {
                 closeTxDetail();
                 closeInfoCard();
