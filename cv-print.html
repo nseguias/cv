@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nahem Seguias - Blockchain & AI Engineer</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0d1117;
+            color: #e6edf3;
+            font-size: 9px;
+            line-height: 1.4;
+            width: 297mm;
+            height: 210mm;
+            padding: 6mm;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Colors */
+        .green { color: #3fb950; }
+        .blue { color: #58a6ff; }
+        .purple { color: #a371f7; }
+        .orange { color: #d29922; }
+        .cyan { color: #39c5cf; }
+        .muted { color: #6e7681; }
+        .secondary { color: #8b949e; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 6px;
+        }
+
+        .name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3fb950;
+            margin-bottom: 4px;
+        }
+
+        .contact-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            font-size: 9px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            color: #8b949e;
+        }
+
+        .contact-item a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .contact-icon {
+            color: #3fb950;
+        }
+
+        /* Main grid */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Section */
+        .section {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 6px;
+        }
+
+        .section-title {
+            color: #3fb950;
+            font-size: 9px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title::before {
+            content: '$';
+            color: #3fb950;
+        }
+
+        /* About struct */
+        .struct-line {
+            padding: 1px 0;
+            padding-left: 12px;
+        }
+
+        /* Stats row */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .stat {
+            text-align: center;
+            background: #21262d;
+            border-radius: 3px;
+            padding: 6px 4px;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #3fb950;
+        }
+
+        .stat-label {
+            font-size: 8px;
+            color: #6e7681;
+            text-transform: uppercase;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .skill-box {
+            background: #21262d;
+            border-radius: 3px;
+            padding: 6px;
+        }
+
+        .skill-title {
+            color: #39c5cf;
+            font-size: 8px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .skill-items {
+            color: #8b949e;
+            font-size: 9px;
+        }
+
+        /* Experience */
+        .exp-item {
+            padding: 3px 0;
+            padding-left: 8px;
+            border-left: 2px solid #30363d;
+            margin-bottom: 4px;
+        }
+
+        .exp-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .exp-company {
+            color: #3fb950;
+            font-weight: 600;
+        }
+
+        .exp-date {
+            color: #6e7681;
+            font-size: 9px;
+        }
+
+        .exp-role {
+            color: #a371f7;
+            font-size: 9px;
+            margin-bottom: 2px;
+        }
+
+        .exp-desc {
+            color: #8b949e;
+            font-size: 9px;
+        }
+
+        /* Education - same style as experience */
+        .edu-item {
+            padding: 3px 0;
+            padding-left: 8px;
+            border-left: 2px solid #30363d;
+            margin-bottom: 4px;
+        }
+
+        .edu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .edu-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .edu-school {
+            color: #3fb950;
+            font-weight: 600;
+        }
+
+        .edu-date {
+            color: #6e7681;
+            font-size: 9px;
+        }
+
+        .edu-degree {
+            color: #a371f7;
+            font-size: 9px;
+            margin-bottom: 2px;
+        }
+
+        .edu-note {
+            color: #8b949e;
+            font-size: 9px;
+        }
+
+        /* Project highlight */
+        .project {
+            background: linear-gradient(135deg, #21262d 0%, rgba(63, 185, 80, 0.1) 100%);
+            border: 1px solid #3fb950;
+            border-radius: 3px;
+            padding: 6px;
+            margin-top: 4px;
+        }
+
+        .project a {
+            color: #3fb950;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 4px;
+            border-top: 1px solid #30363d;
+            margin-top: 4px;
+            color: #6e7681;
+            font-size: 7px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header + Contact -->
+        <div class="header">
+            <div class="name">Nahem Seguias</div>
+            <div class="contact-row">
+                <div class="contact-item">
+                    <span class="contact-icon">@</span>
+                    <span>nahemseguias@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">&lt;/&gt;</span>
+                    <a href="https://github.com/nseguias">github.com/nseguias</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">in</span>
+                    <a href="https://linkedin.com/in/nseguias">linkedin.com/in/nseguias</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">#</span>
+                    <span>+34 665 780 125</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" style="margin-bottom: 6px; grid-template-columns: repeat(4, 1fr);">
+            <div class="stat">
+                <div class="stat-value">15+</div>
+                <div class="stat-label">Years Engineering</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">5+</div>
+                <div class="stat-label">Years Web3 & AI</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">100+</div>
+                <div class="stat-label">Contracts Shipped</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">10+</div>
+                <div class="stat-label">Apps Shipped</div>
+            </div>
+        </div>
+
+        <!-- Main Content - 2 columns -->
+        <div class="main">
+            <div class="column">
+                <!-- About -->
+                <div class="section">
+                    <div class="section-title">about</div>
+                    <div class="struct-line"><span class="purple">struct</span> <span class="cyan">Developer</span> {</div>
+                    <div class="struct-line">  <span class="secondary">location</span>: <span class="green">"Madrid, Spain"</span>,</div>
+                    <div class="struct-line">  <span class="secondary">remote</span>: <span class="purple">true</span>,</div>
+                    <div class="struct-line">  <span class="secondary">languages</span>: <span class="muted">[</span><span class="green">"English"</span>, <span class="green">"Spanish"</span><span class="muted">]</span>,</div>
+                    <div class="struct-line">  <span class="secondary">ai_powered</span>: <span class="purple">true</span>,</div>
+                    <div class="struct-line">  <span class="secondary">works_well_with</span>: <span class="muted">[</span><span class="green">"teams"</span>, <span class="green">"solo"</span><span class="muted">]</span>,</div>
+                    <div class="struct-line">  <span class="secondary">security_first</span>: <span class="purple">true</span>,</div>
+                    <div class="struct-line">  <span class="secondary">ownership</span>: <span class="green">"full"</span>,</div>
+                    <div class="struct-line">}</div>
+                    <div class="struct-line muted" style="margin-top: 3px;">// 15+ years in systems engineering. Blockchain, AI, and infrastructure.</div>
+                    <div class="struct-line muted">// Ships smart contracts across Cosmos, Ethereum, and Solana.</div>
+                    <div class="struct-line muted">// Helps businesses adopt AI — from evaluation to production.</div>
+                    <div class="struct-line muted">// HFT + stock exchange background = obsessed with performance & security.</div>
+                    <div class="struct-line muted">// Smart contract security auditing. Open source contributor.</div>
+                </div>
+
+                <!-- Skills -->
+                <div class="section">
+                    <div class="section-title">skills</div>
+                    <div class="skill-box" style="margin-bottom: 4px;">
+                        <div class="skill-title">// languages</div>
+                        <div class="skill-items">Rust, Solidity, TypeScript, Python, Bash</div>
+                    </div>
+                    <div class="skill-box" style="margin-bottom: 4px;">
+                        <div class="skill-title">// blockchain</div>
+                        <div class="skill-items">Cosmos, Ethereum, EVM, Solana, DeFi, NFT, RWA, MEV</div>
+                    </div>
+                    <div class="skill-box" style="margin-bottom: 4px;">
+                        <div class="skill-title">// ai</div>
+                        <div class="skill-items">Claude Opus 4.6, GPT-5.3 Codex, MCP, Autonomous Agents, Prompt Engineering</div>
+                    </div>
+                    <div class="skill-box">
+                        <div class="skill-title">// tooling</div>
+                        <div class="skill-items">Claude Code, Cursor, Next.js, Anchor, CosmWasm, Forge, Git</div>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="section">
+                    <div class="section-title">education</div>
+                    <div class="edu-item">
+                        <div class="edu-header">
+                            <span class="edu-school">Madrid Stock Exchange</span>
+                            <span class="edu-date">2021</span>
+                        </div>
+                        <div class="edu-degree">MSc AI for Financial Markets (curriculum completed)</div>
+                        <div class="edu-note">Trading algorithms, deep learning, cloud computing for big data.</div>
+                    </div>
+                    <div class="edu-item">
+                        <div class="edu-header">
+                            <span class="edu-school">Universidad Católica Andrés Bello</span>
+                            <span class="edu-date">2005 - 2011</span>
+                        </div>
+                        <div class="edu-degree">MSc Telecommunication Engineering</div>
+                        <div class="edu-note">Graduated with honours. Top 5% of class.</div>
+                    </div>
+                    <div class="edu-item">
+                        <div class="edu-header">
+                            <span class="edu-school">360 GSP College, London</span>
+                            <span class="edu-date">2013 - 2014</span>
+                        </div>
+                        <div class="edu-degree">Server Administration</div>
+                        <div class="edu-note">Cisco CCNA, Microsoft MCSA, VMware certifications.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <!-- Experience -->
+                <div class="section">
+                    <div class="section-title">experience</div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Freelance</span>
+                            <span class="exp-date">2023 - Present</span>
+                        </div>
+                        <div class="exp-role">Blockchain Developer</div>
+                        <div class="exp-desc">
+                            End-to-end dApp and web development across multiple ecosystems.
+                            Cosmos (Rust/CosmWasm): DAOs, naming services, streaming payments, NFT collections.
+                            Ethereum (Solidity): RWA tokenization for real-world asset trading.
+                            Solana: Event ticketing with crowdfunding mechanics.
+                        </div>
+                        <div class="project">
+                            <span class="muted">// Featured:</span> <a href="https://streamweave.org">StreamWeave</a> - Real-time crypto streaming payments platform
+                        </div>
+                        <div class="exp-role" style="margin-top: 4px;">AI Consultant</div>
+                        <div class="exp-desc">
+                            AI consulting for SMBs: evaluating needs, designing solutions, implementing AI tooling, and providing ongoing support. Full-stack web apps, workflow automation, model selection, and team enablement.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Terraform Labs (Terra)</span>
+                            <span class="exp-date">2022 - 2023</span>
+                        </div>
+                        <div class="exp-role">Smart Contracts Developer</div>
+                        <div class="exp-desc">
+                            Built core protocol infrastructure in Rust & CosmWasm: automated task scheduler for conditional execution, and prediction markets platform. Full development lifecycle from design through deployment and security auditor collaboration.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">SIX Swiss Stock Exchange</span>
+                            <span class="exp-date">2018 - 2022</span>
+                        </div>
+                        <div class="exp-role">System Engineer</div>
+                        <div class="exp-desc">
+                            Mission-critical infrastructure connecting banks, brokers, and exchanges.
+                            Led integration projects and maintained 99.99% uptime for trading systems.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">SICE (ACS Group)</span>
+                            <span class="exp-date">2017 - 2018</span>
+                        </div>
+                        <div class="exp-role">Network Engineer</div>
+                        <div class="exp-desc">
+                            Architected network infrastructure for smart city traffic systems.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Jump Trading</span>
+                            <span class="exp-date">2015 - 2017</span>
+                        </div>
+                        <div class="exp-role">NetOps Engineer</div>
+                        <div class="exp-desc">
+                            Sub-microsecond network optimization for one of the world's largest HFT firms.
+                            Built monitoring and automation for infrastructure handling billions in daily volume at ultra-low latency.
+                        </div>
+                    </div>
+
+                    <div class="exp-item">
+                        <div class="exp-header">
+                            <span class="exp-company">Cambridge Broadband Networks</span>
+                            <span class="exp-date">2013 - 2015</span>
+                        </div>
+                        <div class="exp-role">Customer Support Engineer</div>
+                        <div class="exp-desc">
+                            Designed wireless backhaul solutions for telecom clients worldwide.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            nseguias.github.io/cv
+        </div>
+    </div>
+</body>
+</html>
