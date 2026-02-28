@@ -46,8 +46,8 @@
             overflow-x: hidden;
         }
 
-        /* Flow field canvas */
-        #flowField {
+        /* Hash rain canvas */
+        #hashRain {
             position: fixed;
             top: 0;
             left: 0;
@@ -55,6 +55,182 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        #hashRain.loaded {
+            opacity: 1;
+        }
+
+        .chain-status {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            font-size: 9px;
+            color: var(--text-muted);
+            opacity: 0.4;
+            z-index: 2;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chain-info-btn {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #f7931a;
+            background: rgba(247, 147, 26, 0.1);
+            color: #f7931a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 26px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 3;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: btcPulse 2.5s ease-in-out infinite;
+        }
+        .chain-info-btn:hover {
+            animation-play-state: paused;
+            transform: scale(1.15);
+            box-shadow: 0 0 24px rgba(247, 147, 26, 0.6), 0 0 48px rgba(247, 147, 26, 0.3);
+        }
+        @keyframes btcPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(247, 147, 26, 0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 20px rgba(247, 147, 26, 0.5), 0 0 40px rgba(247, 147, 26, 0.2); transform: scale(1.05); }
+        }
+
+        .tx-detail-card {
+            position: fixed;
+            display: none;
+            background: var(--bg-secondary);
+            border: 1px solid #f7931a;
+            border-radius: 8px;
+            padding: 24px 28px;
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.3), 0 8px 32px rgba(0, 0, 0, 0.6);
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 101;
+        }
+        .tx-detail-card.visible {
+            display: block;
+        }
+        .tx-detail-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tx-detail-close:hover {
+            color: var(--text-primary);
+        }
+        .tx-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 12px;
+        }
+        .tx-detail-row:last-of-type {
+            border-bottom: none;
+        }
+        .tx-detail-label {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .tx-detail-value {
+            color: var(--text-primary);
+            font-size: 12px;
+            text-align: right;
+            word-break: break-all;
+        }
+        .tx-detail-txid:hover {
+            color: #f7931a;
+        }
+
+        .chain-info-card {
+            position: fixed;
+            display: none;
+            top: 92px;
+            right: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid #f7931a;
+            border-radius: 8px;
+            padding: 24px 28px;
+            width: 380px;
+            max-width: calc(100vw - 32px);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.3), 0 8px 32px rgba(0, 0, 0, 0.6);
+            z-index: 101;
+        }
+        .chain-info-card.visible {
+            display: block;
+        }
+        .chain-info-card h3 {
+            color: #f7931a;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .chain-info-card p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .chain-info-card .highlight {
+            color: #f7931a;
+        }
+        .chain-info-card .dim {
+            color: var(--text-muted);
+        }
+        .chain-info-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .chain-info-close:hover {
+            color: var(--text-primary);
+        }
+        .chain-info-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .chain-info-stat {
+            text-align: center;
+            flex: 1;
+        }
+        .chain-info-stat .val {
+            color: #f7931a;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .chain-info-stat .lbl {
+            color: var(--text-muted);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
         }
 
         /* Cursor glow effect */
@@ -156,13 +332,13 @@
         }
 
         .section:nth-child(1) { animation-delay: 0s; }
-        .section:nth-child(2) { animation-delay: 2s; }
-        .section:nth-child(3) { animation-delay: 2.1s; }
-        .section:nth-child(4) { animation-delay: 2.2s; }
-        .section:nth-child(5) { animation-delay: 2.3s; }
-        .section:nth-child(6) { animation-delay: 2.4s; }
-        .section:nth-child(7) { animation-delay: 2.5s; }
-        .section:nth-child(8) { animation-delay: 2.6s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+        .section:nth-child(6) { animation-delay: 0.5s; }
+        .section:nth-child(7) { animation-delay: 0.6s; }
+        .section:nth-child(8) { animation-delay: 0.7s; }
 
         @keyframes fadeInUp {
             to {
@@ -516,8 +692,48 @@
     </style>
 </head>
 <body>
-    <canvas id="flowField"></canvas>
+    <canvas id="hashRain"></canvas>
     <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="chain-status" id="chainStatus"></div>
+    <button class="chain-info-btn" id="chainInfoBtn" title="What's this background?">₿</button>
+    <div class="chain-info-card" id="chainInfoCard">
+        <button class="chain-info-close" id="chainInfoClose">&times;</button>
+        <h3>// this background is alive</h3>
+        <p>
+            The falling hex characters on each side of this CV are the <span class="highlight">real Bitcoin mempool</span> —
+            actual unconfirmed transactions waiting to be mined.
+        </p>
+        <p>
+            On load, <span class="highlight" id="infoTxCount">~1,000</span> transaction hashes are fetched
+            from the blockchain. A live WebSocket streams new ones as they arrive.
+            When a block is mined, confirmed columns <span class="highlight">flash green</span> and fade.
+        </p>
+        <p>
+            <span class="highlight">Hover</span> a column to freeze it.
+            <span class="highlight">Click</span> it to see full transaction details — sender, recipient,
+            amount, fee — fetched live from the chain.
+        </p>
+        <p class="dim">
+            Speed, brightness, and position are derived from each transaction hash —
+            same mempool, same visual.
+        </p>
+        <div class="chain-info-stats">
+            <div class="chain-info-stat">
+                <div class="val" id="infoColCount">-</div>
+                <div class="lbl">Columns</div>
+            </div>
+            <div class="chain-info-stat">
+                <div class="val" id="infoLiveCount">-</div>
+                <div class="lbl">Live Txs</div>
+            </div>
+            <div class="chain-info-stat">
+                <div class="val" id="infoWsStatus">-</div>
+                <div class="lbl">Status</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tx-detail-card" id="txDetailCard"></div>
 
     <main class="terminal">
         <div class="terminal-header">
@@ -852,124 +1068,590 @@
     </main>
 
     <script>
-        // Flow Field Animation
-        const canvas = document.getElementById('flowField');
+        // ========== HASH RAIN — Real Bitcoin mempool data ==========
+        const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+        const canvas = document.getElementById('hashRain');
         const ctx = canvas.getContext('2d');
-
         let width, height;
+        let columns = [];
+        let animFrameId;
+        let blockFlashProgress = -1;
+
+        const COL_GAP = isMobile ? 36 : 16;
+        const FONT_SIZE = 13;
+        const CHAR_HEIGHT = FONT_SIZE + 2;
+        const GREEN = { r: 63, g: 185, b: 80 };
+        const BLOCK_FLASH_FRAMES = 90;
+        let liveTxCount = 0;
+        let leftBound = 0, rightBound = 0;
+
+        let txPool = [];     // txids from REST API
+        let txPoolIdx = 0;   // next txid to assign
+        const txMeta = {};   // txid -> { fee, vsize, value } when available
+        const statusEl = document.getElementById('chainStatus');
         let mouse = { x: -1000, y: -1000 };
-        let time = 0;
 
-        // Line particles
-        const lines = [];
-        const lineCount = 80;
+        // WebSocket state
+        let ws = null;
+        let wsConnected = false;
+        let reconnectDelay = 1000;
+        let reconnectTimer = null;
 
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            initLines();
+        // ========== HELPERS ==========
+        // Read a byte (0-255) from a hex txid at position (0-31)
+        function hexByte(txid, pos) {
+            return parseInt(txid.substr(pos * 2, 2), 16) || 0;
         }
 
-        function initLines() {
-            lines.length = 0;
-            for (let i = 0; i < lineCount; i++) {
-                lines.push({
-                    points: [],
-                    baseY: (height / lineCount) * i,
-                    speed: 0.5 + Math.random() * 0.5,
-                    amplitude: 20 + Math.random() * 30,
-                    frequency: 0.002 + Math.random() * 0.002,
-                    phase: Math.random() * Math.PI * 2,
-                    opacity: 0.08 + Math.random() * 0.12
-                });
+        function formatSats(sats) {
+            if (sats == null) return null;
+            if (sats >= 1e8) return (sats / 1e8).toFixed(4) + ' BTC';
+            if (sats >= 1e5) return (sats / 1e5).toFixed(1) + 'k sats';
+            return sats.toLocaleString() + ' sats';
+        }
+
+        // ========== COLUMNS ==========
+        function createColumnFromTxid(x, txid) {
+            const chars = txid.split('');
+            // All visual properties derived deterministically from the txid itself
+            const speed = 0.1 + (hexByte(txid, 0) / 255) * 0.5;
+            const baseOpacity = 0.10 + (hexByte(txid, 1) / 255) * 0.10;
+            const totalH = chars.length * CHAR_HEIGHT;
+            const startFrac = (hexByte(txid, 2) + hexByte(txid, 3) * 256) / 65535;
+            const startY = -totalH + startFrac * (height + totalH); // spread from above viewport to bottom
+
+            return {
+                x, y: startY, speed, chars, txid, baseOpacity,
+                fresh: false, freshAge: 0,
+                confirmedTimer: 0,
+            };
+        }
+
+        function buildColumns() {
+            const termEl = document.querySelector('.terminal');
+            if (termEl) {
+                const rect = termEl.getBoundingClientRect();
+                leftBound = rect.left;
+                rightBound = rect.right;
+            }
+            const sideOnly = (rightBound - leftBound) < (width - 60);
+            const count = Math.floor(width / COL_GAP);
+            const newCols = [];
+            for (let i = 0; i < count; i++) {
+                const x = i * COL_GAP + COL_GAP / 2;
+                if (sideOnly && x >= leftBound && x <= rightBound) continue;
+                if (txPoolIdx < txPool.length) {
+                    newCols.push(createColumnFromTxid(x, txPool[txPoolIdx++]));
+                }
+            }
+            columns = newCols;
+        }
+
+        // Queue incoming live txs — injected naturally when columns wrap
+        const txQueue = [];
+        let txPoolRecycleIdx = 0;
+
+        function injectTx(txid, meta) {
+            if (columns.length === 0) return;
+            if (meta) txMeta[txid] = meta;
+            if (txQueue.length < 200) {
+                txQueue.push({ txid, meta });
             }
         }
 
-        function getFlowAngle(x, y, t) {
-            // Multiple sine waves for complex flow
-            const scale = 0.003;
-            const angle = Math.sin(x * scale + t) * Math.cos(y * scale + t * 0.7) * Math.PI;
-            return angle;
-        }
+        function updateColumn(col) {
+            col.y += col.speed;
 
-        function distortFromMouse(x, y, baseY) {
-            const dx = x - mouse.x;
-            const dy = baseY - mouse.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxDist = 200;
-
-            if (dist < maxDist) {
-                const force = (1 - dist / maxDist) * 80;
-                const angle = Math.atan2(dy, dx);
-                return Math.sin(angle) * force;
-            }
-            return 0;
-        }
-
-        function drawLine(line) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(63, 185, 80, ${line.opacity})`;
-            ctx.lineWidth = 1;
-
-            const segments = 100;
-            const segmentWidth = width / segments;
-
-            for (let i = 0; i <= segments; i++) {
-                const x = i * segmentWidth;
-                const baseY = line.baseY;
-
-                // Sine wave motion
-                const wave1 = Math.sin(x * line.frequency + time * line.speed + line.phase) * line.amplitude;
-                const wave2 = Math.sin(x * line.frequency * 1.5 + time * line.speed * 0.8) * line.amplitude * 0.5;
-                const wave3 = Math.cos(x * line.frequency * 0.5 + time * line.speed * 1.2) * line.amplitude * 0.3;
-
-                // Flow field influence
-                const flowAngle = getFlowAngle(x, baseY, time * 0.5);
-                const flowOffset = Math.sin(flowAngle) * 15;
-
-                // Mouse distortion
-                const mouseOffset = distortFromMouse(x, baseY + wave1, baseY);
-
-                const y = baseY + wave1 + wave2 + wave3 + flowOffset + mouseOffset;
-
-                if (i === 0) {
-                    ctx.moveTo(x, y);
+            const totalH = col.chars.length * CHAR_HEIGHT;
+            if (col.y > height + CHAR_HEIGHT) {
+                col.y = -totalH;
+                // Column wrapped — pick up new content
+                if (txQueue.length > 0) {
+                    // Live WebSocket tx — enters glowing
+                    const entry = txQueue.shift();
+                    col.chars = entry.txid.split('');
+                    col.txid = entry.txid;
+                    col.speed = 0.2 + (hexByte(entry.txid, 0) / 255) * 0.35;
+                    col.baseOpacity = 0.10 + (hexByte(entry.txid, 1) / 255) * 0.10;
+                    col.fresh = true;
+                    col.freshAge = 0;
+                    liveTxCount++;
+                } else if (txPool.length > 0) {
+                    // Recycle from pool — occasionally glow for visual continuity
+                    const txid = txPool[txPoolRecycleIdx % txPool.length];
+                    txPoolRecycleIdx++;
+                    col.chars = txid.split('');
+                    col.txid = txid;
+                    col.speed = 0.1 + (hexByte(txid, 0) / 255) * 0.5;
+                    col.baseOpacity = 0.10 + (hexByte(txid, 1) / 255) * 0.10;
+                    col.fresh = Math.random() < 0.25;
+                    col.freshAge = 0;
                 } else {
-                    ctx.lineTo(x, y);
+                    col.fresh = false;
                 }
             }
 
-            ctx.stroke();
+            if (col.fresh) col.freshAge++;
+            if (col.confirmedTimer > 0) col.confirmedTimer--;
+        }
+
+        function drawColumn(col) {
+            if (col.chars.length === 0) return;
+            const { r, g, b } = GREEN;
+
+            // Compute one color for the entire column
+            let style;
+            if (col.confirmedTimer > 0) {
+                const a = (col.confirmedTimer / 60) * 0.35;
+                style = `rgba(${r}, ${g}, ${b}, ${a})`;
+            } else if (col.fresh) {
+                // Uniform fade over time: bright → readable dim as freshAge increases
+                const FADE_FRAMES = 500; // ~8s full fade
+                const t = Math.max(0, 1 - col.freshAge / FADE_FRAMES); // 1 = just arrived, 0 = fully faded
+                const white = Math.round(t * 60);
+                const a = 0.15 + t * 0.35; // fades from 0.50 → 0.15 (still readable)
+                style = `rgba(${Math.min(255, r + white)}, ${Math.min(255, g + white)}, ${Math.min(255, b + white)}, ${a})`;
+            } else {
+                style = `rgba(${r}, ${g}, ${b}, ${Math.min(0.55, col.baseOpacity)})`;
+            }
+
+            ctx.fillStyle = style;
+            for (let i = 0; i < col.chars.length; i++) {
+                const cy = col.y + i * CHAR_HEIGHT;
+                if (cy < -CHAR_HEIGHT || cy > height + CHAR_HEIGHT) continue;
+                ctx.fillText(col.chars[i], col.x, cy);
+            }
+        }
+
+        // ========== BLOCK MINED ==========
+        function triggerBlockFlash(blockId) {
+            blockFlashProgress = 1.0;
+            // Use block hash to deterministically pick which columns "confirm"
+            for (let i = 0; i < columns.length; i++) {
+                const byte = blockId ? hexByte(blockId, i % 32) : 128;
+                if (byte < 77) { // ~30% of columns
+                    columns[i].confirmedTimer = 60;
+                }
+            }
+        }
+
+        // ========== REST API — seed from real mempool ==========
+        async function fetchMempoolData() {
+            // Fetch txids and recent tx details in parallel
+            const [txidsRes, recentRes] = await Promise.allSettled([
+                fetch('https://mempool.space/api/mempool/txids'),
+                fetch('https://mempool.space/api/mempool/recent'),
+            ]);
+
+            // Store recent tx metadata (fee, vsize, value)
+            if (recentRes.status === 'fulfilled' && recentRes.value.ok) {
+                try {
+                    const recent = await recentRes.value.json();
+                    for (const tx of recent) {
+                        if (tx.txid) {
+                            txMeta[tx.txid] = { fee: tx.fee, vsize: tx.vsize, value: tx.value };
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }
+
+            // Build columns from txids
+            if (txidsRes.status === 'fulfilled' && txidsRes.value.ok) {
+                try {
+                    txPool = await txidsRes.value.json();
+                    if (txPool.length > 0) {
+                        txPoolIdx = 0;
+                        buildColumns();
+                        setStatus('loaded');
+                        updateTxCountDisplay();
+                    }
+                } catch (e) { /* ignore */ }
+            }
+        }
+
+        // ========== WEBSOCKET — live updates ==========
+        function wsConnect() {
+            if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+
+            try {
+                ws = new WebSocket('wss://mempool.space/api/v1/ws');
+            } catch (e) { return; }
+
+            ws.onopen = () => {
+                wsConnected = true;
+                reconnectDelay = 1000;
+                setStatus('live');
+                ws.send(JSON.stringify({ action: 'want', data: ['blocks', 'mempool-blocks', 'stats'] }));
+                ws.send(JSON.stringify({ action: 'init' }));
+                // Track projected next block for frequent tx updates
+                ws.send(JSON.stringify({ 'track-mempool-block': 0 }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    // Individual new transaction
+                    if (data.tx) {
+                        const tx = data.tx;
+                        if (tx.txid) {
+                            const meta = (tx.fee || tx.vsize || tx.value) ? { fee: tx.fee, vsize: tx.vsize, value: tx.value } : null;
+                            injectTx(tx.txid, meta);
+                        }
+                    }
+
+                    // mempool-blocks update: extract txids from projected blocks
+                    if (data['mempool-blocks'] && Array.isArray(data['mempool-blocks'])) {
+                        for (const block of data['mempool-blocks']) {
+                            if (!block.transactions) continue;
+                            for (const tx of block.transactions) {
+                                if (tx && tx.txid) {
+                                    const meta = (tx.fee || tx.vsize || tx.value) ? { fee: tx.fee, vsize: tx.vsize, value: tx.value } : null;
+                                    injectTx(tx.txid, meta);
+                                }
+                            }
+                        }
+                    }
+
+                    // Flat transactions array
+                    if (data.transactions && Array.isArray(data.transactions)) {
+                        for (const tx of data.transactions) {
+                            if (tx && tx.txid) {
+                                const meta = (tx.fee || tx.vsize || tx.value) ? { fee: tx.fee, vsize: tx.vsize, value: tx.value } : null;
+                                injectTx(tx.txid, meta);
+                            }
+                        }
+                    }
+
+                    // Block mined
+                    if (data.block) {
+                        triggerBlockFlash(data.block.id || null);
+                    }
+                } catch (e) { /* ignore parse errors */ }
+            };
+
+            ws.onclose = () => {
+                wsConnected = false;
+                setStatus('offline');
+                scheduleReconnect();
+            };
+
+            ws.onerror = () => { if (ws) ws.close(); };
+        }
+
+        function scheduleReconnect() {
+            if (reconnectTimer) return;
+            reconnectTimer = setTimeout(() => {
+                reconnectTimer = null;
+                wsConnect();
+            }, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+        }
+
+        function wsDisconnect() {
+            if (ws) { ws.onclose = null; ws.close(); ws = null; }
+            wsConnected = false;
+            if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+        }
+
+        function setStatus(state) {
+            if (!statusEl) return;
+            if (state === 'live') {
+                statusEl.textContent = 'chain: live';
+                statusEl.style.color = '#3fb950';
+            } else if (state === 'loaded') {
+                statusEl.textContent = 'chain: loaded';
+                statusEl.style.color = '#58a6ff';
+            } else {
+                statusEl.textContent = 'chain: offline';
+                statusEl.style.color = '#6e7681';
+            }
+        }
+
+        // ========== RENDERER ==========
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if (txPool.length > 0) {
+                txPoolIdx = 0;
+                buildColumns();
+            }
         }
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
+            ctx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
+            ctx.textAlign = 'center';
 
-            time += 0.02;
+            // Block flash: subtle green overlay that fades
+            if (blockFlashProgress > 0) {
+                blockFlashProgress -= 1 / BLOCK_FLASH_FRAMES;
+                if (blockFlashProgress > 0) {
+                    ctx.fillStyle = `rgba(63, 185, 80, ${blockFlashProgress * 0.05})`;
+                    ctx.fillRect(0, 0, width, height);
+                }
+            }
 
-            lines.forEach(line => {
-                drawLine(line);
-            });
+            for (const col of columns) {
+                updateColumn(col);
+                drawColumn(col);
+            }
 
-            requestAnimationFrame(animate);
+            animFrameId = requestAnimationFrame(animate);
         }
 
-        // Event listeners
+        // Pause when tab hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                wsDisconnect();
+                if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+            } else {
+                wsConnect();
+                if (!animFrameId) animFrameId = requestAnimationFrame(animate);
+            }
+        });
+
         window.addEventListener('resize', resize);
+
+        // Initialize: fetch real mempool data, then fade in and connect WS
+        (function init() {
+            resize();
+            setStatus('offline');
+            fetchMempoolData().then(() => {
+                canvas.classList.add('loaded');
+                wsConnect();
+            });
+            animFrameId = requestAnimationFrame(animate);
+        })();
+
+        // ========== INFO PANEL ==========
+        const infoBtn = document.getElementById('chainInfoBtn');
+        const infoCard = document.getElementById('chainInfoCard');
+        const infoClose = document.getElementById('chainInfoClose');
+
+        function updateInfoStats() {
+            const colEl = document.getElementById('infoColCount');
+            const liveEl = document.getElementById('infoLiveCount');
+            const statusInfoEl = document.getElementById('infoWsStatus');
+            if (colEl) colEl.textContent = columns.length;
+            if (liveEl) liveEl.textContent = liveTxCount;
+            if (statusInfoEl) statusInfoEl.textContent = wsConnected ? 'Live' : 'Offline';
+        }
+
+        function closeInfoCard() {
+            infoCard.classList.remove('visible');
+        }
+
+        infoBtn.addEventListener('click', () => {
+            closeTxDetail();
+            updateInfoStats();
+            infoCard.classList.toggle('visible');
+        });
+
+        infoClose.addEventListener('click', closeInfoCard);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeInfoCard();
+                closeTxDetail();
+            }
+        });
+
+        // Update tx count display after fetch
+        function updateTxCountDisplay() {
+            const el = document.getElementById('infoTxCount');
+            if (el && txPool.length > 0) el.textContent = txPool.length.toLocaleString();
+        }
+
+        // ========== COLUMN FREEZE ON HOVER ==========
+        let frozenCol = null;
+        let frozenOriginalSpeed = 0;
+
+        function findNearestSideColumn(cx) {
+            if (columns.length === 0) return null;
+            // Must be in side area (outside terminal)
+            if (cx >= leftBound && cx <= rightBound) return null;
+            let nearest = null;
+            let minDist = Infinity;
+            for (const col of columns) {
+                const d = Math.abs(col.x - cx);
+                if (d < minDist) { minDist = d; nearest = col; }
+            }
+            if (!nearest || minDist > COL_GAP) return null;
+            return nearest;
+        }
 
         document.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
+            // Unfreeze previous column
+            if (frozenCol) {
+                frozenCol.speed = frozenOriginalSpeed;
+                frozenCol = null;
+            }
+            const col = findNearestSideColumn(e.clientX);
+            if (col) {
+                frozenOriginalSpeed = col.speed;
+                col.speed = 0;
+                frozenCol = col;
+                document.body.style.cursor = 'pointer';
+            } else {
+                document.body.style.cursor = '';
+            }
         });
 
         document.addEventListener('mouseleave', () => {
             mouse.x = -1000;
             mouse.y = -1000;
+            if (frozenCol) {
+                frozenCol.speed = frozenOriginalSpeed;
+                frozenCol = null;
+            }
+            document.body.style.cursor = '';
         });
 
-        // Initialize
-        resize();
-        animate();
+        // ========== CLICK COLUMN → TX DETAIL ==========
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('a, button, .terminal')) return;
+            if (e.target.closest('.tx-detail-card')) return;
+            if (e.target.closest('.chain-info-card')) return;
+
+            const col = findNearestSideColumn(e.clientX);
+            if (col && col.txid) {
+                closeInfoCard();
+                showTxDetail(col.txid, e.clientX, e.clientY);
+            } else {
+                closeTxDetail();
+                closeInfoCard();
+            }
+        });
+
+        function positionCard(card, cx, cy) {
+            const margin = 12;
+            let left, cardW;
+
+            if (cx < leftBound) {
+                // Left side — fit card within left area
+                cardW = Math.min(380, Math.max(260, leftBound - 2 * margin));
+                left = margin;
+            } else {
+                // Right side — fit card within right area
+                const rightSpace = window.innerWidth - rightBound;
+                cardW = Math.min(380, Math.max(260, rightSpace - 2 * margin));
+                left = rightBound + margin;
+            }
+
+            card.style.width = cardW + 'px';
+            const top = Math.max(margin, Math.min(cy - 60, window.innerHeight - 420));
+            card.style.left = left + 'px';
+            card.style.top = top + 'px';
+        }
+
+        function renderTxCard(card, txid, data) {
+            const fromAddr = data.from || 'Unknown';
+            const toAddr = data.to || 'Unknown';
+            const fromDisplay = fromAddr === 'Coinbase' ? 'Coinbase' : fromAddr.length > 20 ? fromAddr.slice(0, 12) + '...' + fromAddr.slice(-8) : fromAddr;
+            const toDisplay = toAddr === 'Unknown' ? 'Unknown' : toAddr.length > 20 ? toAddr.slice(0, 12) + '...' + toAddr.slice(-8) : toAddr;
+
+            let rows =
+                '<button class="tx-detail-close" id="txDetailClose">&times;</button>' +
+                '<h3 style="color:#f7931a;font-size:14px;margin-bottom:16px;">Transaction Details</h3>' +
+                '<div class="tx-detail-row">' +
+                    '<span class="tx-detail-label">TxID</span>' +
+                    '<span class="tx-detail-value tx-detail-txid" title="Click to copy" style="cursor:pointer;" id="txDetailCopy">' +
+                        txid.slice(0, 16) + '...' + txid.slice(-16) +
+                    '</span>' +
+                '</div>';
+
+            if (data.from) {
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">From</span><span class="tx-detail-value">' + fromDisplay + '</span></div>';
+            }
+            if (data.to) {
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">To</span><span class="tx-detail-value">' + toDisplay + '</span></div>';
+            }
+            if (data.amount != null) {
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">Amount</span><span class="tx-detail-value" style="color:#f7931a;">' + formatSats(data.amount) + '</span></div>';
+            }
+            if (data.fee != null) {
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">Fee</span><span class="tx-detail-value">' + formatSats(data.fee) + '</span></div>';
+            }
+            if (data.feeRate) {
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">Fee Rate</span><span class="tx-detail-value">' + data.feeRate + ' sat/vB</span></div>';
+            }
+            if (data.status) {
+                const isConfirmed = data.status === 'Confirmed';
+                rows += '<div class="tx-detail-row"><span class="tx-detail-label">Status</span><span class="tx-detail-value" style="color:' + (isConfirmed ? '#3fb950' : '#f7931a') + ';">' + data.status + '</span></div>';
+            }
+            if (data.partial) {
+                rows += '<div style="margin-top:12px;text-align:center;color:var(--text-muted);font-size:10px;">Partial data — full details unavailable</div>';
+            }
+            rows += '<div style="margin-top:12px;text-align:center;">' +
+                '<a href="https://mempool.space/tx/' + txid + '" target="_blank" style="color:var(--text-muted);font-size:11px;">View on mempool.space →</a></div>';
+
+            card.innerHTML = rows;
+            document.getElementById('txDetailClose').addEventListener('click', closeTxDetail);
+            const copyEl = document.getElementById('txDetailCopy');
+            if (copyEl) copyEl.addEventListener('click', () => navigator.clipboard.writeText(txid));
+        }
+
+        async function showTxDetail(txid, cx, cy) {
+            const card = document.getElementById('txDetailCard');
+
+            // Position and show loading
+            positionCard(card, cx, cy);
+            card.innerHTML = '<button class="tx-detail-close" id="txDetailClose">&times;</button>' +
+                '<div style="text-align:center;color:#f7931a;padding:32px 0;font-size:12px;">Loading...</div>';
+            card.classList.add('visible');
+            document.getElementById('txDetailClose').addEventListener('click', closeTxDetail);
+
+            try {
+                const res = await fetch('https://mempool.space/api/tx/' + txid);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const tx = await res.json();
+                renderTxCard(card, txid, {
+                    from: tx.vin && tx.vin[0] && tx.vin[0].prevout ? tx.vin[0].prevout.scriptpubkey_address : 'Coinbase',
+                    to: tx.vout && tx.vout[0] ? tx.vout[0].scriptpubkey_address : 'Unknown',
+                    amount: tx.vout ? tx.vout.reduce((s, o) => s + (o.value || 0), 0) : null,
+                    fee: tx.fee,
+                    feeRate: tx.weight ? (tx.fee / (tx.weight / 4)).toFixed(1) : null,
+                    status: tx.status && tx.status.confirmed ? 'Confirmed' : 'Unconfirmed',
+                });
+            } catch (err) {
+                // Fallback to cached metadata if available
+                const meta = txMeta[txid];
+                if (meta) {
+                    renderTxCard(card, txid, {
+                        amount: meta.value,
+                        fee: meta.fee,
+                        feeRate: meta.fee && meta.vsize ? (meta.fee / meta.vsize).toFixed(1) : null,
+                        status: 'Unconfirmed',
+                        partial: true,
+                    });
+                } else {
+                    // Minimal card — still show txid and link
+                    card.innerHTML =
+                        '<button class="tx-detail-close" id="txDetailClose">&times;</button>' +
+                        '<h3 style="color:#f7931a;font-size:14px;margin-bottom:16px;">Transaction</h3>' +
+                        '<div class="tx-detail-row">' +
+                            '<span class="tx-detail-label">TxID</span>' +
+                            '<span class="tx-detail-value tx-detail-txid" title="Click to copy" style="cursor:pointer;" id="txDetailCopy">' +
+                                txid.slice(0, 16) + '...' + txid.slice(-16) +
+                            '</span>' +
+                        '</div>' +
+                        '<div style="margin-top:16px;text-align:center;color:var(--text-muted);font-size:11px;">Could not load full details</div>' +
+                        '<div style="margin-top:8px;text-align:center;">' +
+                            '<a href="https://mempool.space/tx/' + txid + '" target="_blank" style="color:#f7931a;font-size:11px;">View on mempool.space →</a>' +
+                        '</div>';
+                    document.getElementById('txDetailClose').addEventListener('click', closeTxDetail);
+                    document.getElementById('txDetailCopy').addEventListener('click', () => navigator.clipboard.writeText(txid));
+                }
+            }
+        }
+
+        function closeTxDetail() {
+            document.getElementById('txDetailCard').classList.remove('visible');
+        }
 
         // Cursor glow effect
         const cursorGlow = document.getElementById('cursorGlow');
