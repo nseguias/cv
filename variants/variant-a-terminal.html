@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variant A — Conversational Terminal | Nahem Seguias</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/intel-one-mono@5/index.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/intel-one-mono@5/500.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/intel-one-mono@5/700.min.css">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --panel-2: #21262d;
+            --text: #e6edf3;
+            --text-2: #8b949e;
+            --muted: #6e7681;
+            --green: #3fb950;
+            --blue: #58a6ff;
+            --border: #30363d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Intel One Mono', 'IntoneMono Nerd Font', 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.65;
+            padding: 40px 16px;
+        }
+        .terminal {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--panel-2);
+            border-bottom: 1px solid var(--border);
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.r { background: #f85149; } .dot.y { background: #d29922; } .dot.g { background: #3fb950; }
+        .bar-title { margin-left: 8px; color: var(--muted); font-size: 12px; }
+        .body { padding: 28px 32px 36px; }
+        .prompt {
+            color: var(--green);
+            font-weight: 700;
+            margin: 32px 0 12px;
+            font-size: 14px;
+        }
+        .prompt::before { content: '$ '; }
+        .prompt:first-child { margin-top: 0; }
+        h1 { font-size: 30px; font-weight: 700; color: var(--green); letter-spacing: -0.02em; }
+        .role { color: var(--text-2); margin-top: 2px; font-size: 15px; }
+        .intro { margin-top: 16px; color: var(--text); max-width: 64ch; }
+        .intro p + p { margin-top: 10px; }
+        .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+        .chip {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+        .chip a { color: var(--blue); text-decoration: none; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .stat { background: var(--panel-2); border-radius: 6px; padding: 12px 8px; text-align: center; }
+        .stat b { display: block; font-size: 20px; color: var(--green); }
+        .stat span { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+        ul { list-style: none; }
+        li { padding-left: 18px; position: relative; color: var(--text-2); margin-bottom: 6px; }
+        li::before { content: '▸'; color: var(--green); position: absolute; left: 0; }
+        li b, .exp-desc b { color: var(--text); font-weight: 500; }
+        .skills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .skill-box { background: var(--panel-2); border-radius: 6px; padding: 12px 14px; }
+        .skill-box h3 { font-size: 11px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .skill-box p { color: var(--text-2); font-size: 13px; }
+        .exp { border-left: 2px solid var(--border); padding: 2px 0 2px 16px; margin-bottom: 22px; }
+        .exp:last-child { margin-bottom: 0; }
+        .exp-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+        .exp-head b { color: var(--text); font-size: 15px; }
+        .exp-head span { color: var(--muted); font-size: 12px; }
+        .exp-role { color: var(--green); font-size: 13px; margin: 2px 0 6px; }
+        .featured {
+            margin-top: 10px;
+            border: 1px solid var(--green);
+            background: linear-gradient(135deg, var(--panel-2), rgba(63,185,80,0.08));
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+        .featured a { color: var(--green); font-weight: 700; text-decoration: none; }
+        .contact-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .contact-grid a {
+            color: var(--blue); text-decoration: none;
+            background: var(--panel-2); border: 1px solid var(--border);
+            border-radius: 6px; padding: 8px 14px; font-size: 13px;
+        }
+        @media (max-width: 640px) {
+            .stats, .skills { grid-template-columns: 1fr 1fr; }
+            .body { padding: 20px 16px 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="bar">
+            <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+            <span class="bar-title">nahem@dev ~ /cv</span>
+        </div>
+        <div class="body">
+            <div class="prompt">whoami</div>
+            <h1>Nahem Seguias</h1>
+            <div class="role">AI &amp; Blockchain Engineer · Madrid, Spain · Remote</div>
+            <div class="intro">
+                <p>Hi, I'm Nahem. I've spent 15+ years building systems that can't afford to fail — from
+                high-frequency trading networks to stock exchanges to blockchain protocols.</p>
+                <p>These days I ship full-stack products at AI-native velocity, orchestrating multi-agent
+                workflows from spec to production. I secure smart contracts across Cosmos, Ethereum, and
+                Solana, and I run private, self-hosted LLMs for clients who can't send their data to the cloud.</p>
+            </div>
+            <div class="meta-row">
+                <span class="chip">English &amp; Spanish</span>
+                <span class="chip">Security-first</span>
+                <span class="chip">Full ownership</span>
+                <span class="chip">Open source contributor</span>
+            </div>
+
+            <div class="prompt">cat highlights.txt</div>
+            <div class="stats">
+                <div class="stat"><b>15+</b><span>Years Engineering</span></div>
+                <div class="stat"><b>5+</b><span>Years Web3 &amp; AI</span></div>
+                <div class="stat"><b>100+</b><span>Contracts Shipped</span></div>
+                <div class="stat"><b>10+</b><span>Apps Shipped</span></div>
+            </div>
+
+            <div class="prompt">ls ~/skills/</div>
+            <div class="skills">
+                <div class="skill-box"><h3>AI</h3><p>Agentic Engineering, Multi-Agent Orchestration, MCP, Frontier LLMs, Evals, Private LLM Deployment</p></div>
+                <div class="skill-box"><h3>Blockchain</h3><p>Cosmos, Ethereum, EVM, Solana, DeFi, NFT, RWA, MEV</p></div>
+                <div class="skill-box"><h3>Languages</h3><p>Rust, Solidity, TypeScript, Python, Bash</p></div>
+                <div class="skill-box"><h3>Tooling</h3><p>Claude Code, Cursor, Ollama, Next.js, Anchor, CosmWasm, Forge, Git</p></div>
+            </div>
+
+            <div class="prompt">cat experience.log</div>
+            <div class="exp">
+                <div class="exp-head"><b>Freelance</b><span>2023 – Present</span></div>
+                <div class="exp-role">AI Engineer · Blockchain Developer</div>
+                <ul>
+                    <li>I orchestrate <b>multi-agent workflows</b> (Claude Code, MCP) that take products from spec to production, evaluating AI-generated code along the way.</li>
+                    <li>I deploy <b>private, self-hosted LLMs</b> for clients with data-sovereignty needs, and advise businesses on AI adoption.</li>
+                    <li>I build dApps end-to-end: Cosmos DAOs, naming services, streaming payments &amp; NFTs (Rust/CosmWasm); <b>RWA tokenization</b> on Ethereum; event ticketing on Solana.</li>
+                    <li>I run <b>smart contract security reviews</b> combining manual auditing with AI-assisted vulnerability detection.</li>
+                </ul>
+                <div class="featured">// Featured: <a href="https://streamweave.org">StreamWeave</a> — real-time crypto streaming payments platform</div>
+            </div>
+            <div class="exp">
+                <div class="exp-head"><b>Terraform Labs (Terra)</b><span>2022 – 2023</span></div>
+                <div class="exp-role">Smart Contracts Developer</div>
+                <ul>
+                    <li>Built core protocol infrastructure in Rust &amp; CosmWasm: an automated task scheduler for conditional execution and a prediction markets platform.</li>
+                    <li>Owned the full lifecycle — design, deployment, and collaboration with security auditors.</li>
+                </ul>
+            </div>
+            <div class="exp">
+                <div class="exp-head"><b>SIX Swiss Stock Exchange</b><span>2018 – 2022</span></div>
+                <div class="exp-role">System Engineer</div>
+                <ul>
+                    <li>Ran mission-critical infrastructure connecting banks, brokers, and exchanges at <b>99.99% uptime</b>.</li>
+                    <li>Led integration projects for trading systems.</li>
+                </ul>
+            </div>
+            <div class="exp">
+                <div class="exp-head"><b>Jump Trading</b><span>2015 – 2017</span></div>
+                <div class="exp-role">NetOps Engineer</div>
+                <ul>
+                    <li><b>Sub-microsecond</b> network optimization for one of the world's largest HFT firms — billions in daily volume.</li>
+                    <li>Built monitoring and automation for ultra-low-latency infrastructure.</li>
+                </ul>
+            </div>
+            <div class="exp">
+                <div class="exp-head"><b>SICE (ACS Group) · Cambridge Broadband Networks</b><span>2013 – 2018</span></div>
+                <div class="exp-role">Network Engineer · Support Engineer</div>
+                <ul>
+                    <li>Architected network infrastructure for smart-city traffic systems; designed wireless backhaul for telecom clients worldwide.</li>
+                </ul>
+            </div>
+
+            <div class="prompt">cat education.txt</div>
+            <div class="exp">
+                <div class="exp-head"><b>Madrid Stock Exchange</b><span>2021</span></div>
+                <div class="exp-role">MSc AI for Financial Markets (curriculum completed)</div>
+            </div>
+            <div class="exp">
+                <div class="exp-head"><b>Universidad Católica Andrés Bello</b><span>2005 – 2011</span></div>
+                <div class="exp-role">MSc Telecommunication Engineering — honours, top 5%</div>
+            </div>
+
+            <div class="prompt">contact --all</div>
+            <div class="contact-grid">
+                <a href="mailto:nahemseguias@gmail.com">nahemseguias@gmail.com</a>
+                <a href="https://github.com/nseguias">github.com/nseguias</a>
+                <a href="https://linkedin.com/in/nseguias">linkedin.com/in/nseguias</a>
+                <a href="tel:+34665780125">+34 665 780 125</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
